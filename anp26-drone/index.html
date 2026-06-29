@@ -56,7 +56,6 @@
 const HASH='4bc7855012ab13654b040b0132458481c3adc356dc8fcbecd0c0c35acbfe4486';
 async function sha256(m){const e=new TextEncoder().encode(m);const h=await crypto.subtle.digest('SHA-256',e);return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join('')}
 const lock=document.getElementById('lockscreen'), main=document.getElementById('main'), input=document.getElementById('pwinput'), err=document.getElementById('lckerr');
-if(sessionStorage.getItem('auth-g')==='1') unlock();
 input.addEventListener('keydown',async e=>{if(e.key!=='Enter')return;if(await sha256(input.value)===HASH){sessionStorage.setItem('auth-g','1');unlock()}else{err.textContent='Password incorreta';input.value='';lock.classList.add('lock-shake');setTimeout(()=>lock.classList.remove('lock-shake'),450)}});
 function unlock(){lock.classList.add('hidden');main.style.display='block';buildToday();update();}
 document.querySelectorAll('.block-header').forEach(h=>{h.addEventListener('click',()=>{const b=h.closest('.block');const s=b.querySelector('.block-shots');if(!b.classList.contains('block-collapsed'))s.style.maxHeight=s.scrollHeight+'px';requestAnimationFrame(()=>{b.classList.toggle('block-collapsed');if(!b.classList.contains('block-collapsed')){s.style.maxHeight=s.scrollHeight+'px';setTimeout(()=>s.style.maxHeight='none',300)}})})});
@@ -72,6 +71,7 @@ function buildToday(){const id=todayId();const title=document.getElementById('to
 function applyFilter(f){document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.filter===f));document.querySelectorAll('section.block').forEach(s=>s.classList.remove('hidden-by-filter'));document.querySelectorAll('.shot-row,.info-row').forEach(r=>r.classList.remove('row-hidden'));if(f==='all')return;if(f==='access'){document.querySelectorAll('section.block').forEach(s=>{if(s.id!=='access')s.classList.add('hidden-by-filter')});return}if(f==='today'){const id=todayId();document.querySelectorAll('section.block').forEach(s=>{if(!['today','access',id].includes(s.id))s.classList.add('hidden-by-filter')});return}if(f==='checks'){document.querySelectorAll('section.block').forEach(s=>{if(!s.querySelector('.shot-row'))s.classList.add('hidden-by-filter')});return}if(f==='info'){document.querySelectorAll('section.block').forEach(s=>{if(!s.classList.contains('reference')&&!['access','english','today'].includes(s.id))s.classList.add('hidden-by-filter')});return}if(f==='spotify'){document.querySelectorAll('section.block').forEach(s=>{if(!['spotify','day1','day2','day3','today'].includes(s.id))s.classList.add('hidden-by-filter')});document.querySelectorAll('#day1 .shot-row,#day2 .shot-row,#day3 .shot-row').forEach(r=>{if(!r.innerText.includes('SPOTIFY'))r.classList.add('row-hidden')});}}
 document.querySelectorAll('.mode-btn').forEach(b=>b.addEventListener('click',()=>applyFilter(b.dataset.filter)));
 buildToday();update();
+if(sessionStorage.getItem('auth-g')==='1') unlock();
 </script>
 </body>
 </html>
